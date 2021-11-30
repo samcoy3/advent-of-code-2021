@@ -3,14 +3,12 @@ cabal-version: 1.12
 -- This file has been generated from package.yaml by hpack version 0.34.4.
 --
 -- see: https://github.com/sol/hpack
---
--- hash: 46c6d2e209552afe753aaea26d2ad3c744f3679e6d6539834df2f838bfe025a2
 
-name:           aoc-template
+name:           aoc2021
 version:        2021.0
-description:    A template for Advent of Code projects in Haskell
-homepage:       https://github.com/samcoy3/advent-of-code-template#readme
-bug-reports:    https://github.com/samcoy3/advent-of-code-template/issues
+description:    My solutions to Advent of Code 2021, written in Haskell.
+homepage:       https://github.com/samcoy3/advent-of-code-2021#readme
+bug-reports:    https://github.com/samcoy3/advent-of-code-2021/issues
 author:         Sam Coy
 maintainer:     samcoy3@gmail.com
 copyright:      2021 Sam Coy
@@ -22,7 +20,7 @@ extra-source-files:
 
 source-repository head
   type: git
-  location: https://github.com/samcoy3/advent-of-code-template
+  location: https://github.com/samcoy3/advent-of-code-2021
 
 library
   exposed-modules:
@@ -57,7 +55,7 @@ library
       Util.Parsers
       Util.Util
   other-modules:
-      Paths_aoc_template
+      Paths_aoc2021
   hs-source-dirs:
       src
   default-extensions:
@@ -95,7 +93,7 @@ library
 executable aoc-template-exe
   main-is: Main.hs
   other-modules:
-      Paths_aoc_template
+      Paths_aoc2021
   hs-source-dirs:
       app
   default-extensions:
@@ -118,7 +116,7 @@ executable aoc-template-exe
   ghc-options: -threaded -rtsopts -with-rtsopts=-N
   build-depends:
       ansi-terminal
-    , aoc-template
+    , aoc2021
     , attoparsec
     , base >=4.7 && <5
     , containers
