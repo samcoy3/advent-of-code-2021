@@ -1,19 +1,8 @@
 module Days.Day01 (runDay) where
 
 {- ORMOLU_DISABLE -}
-import Data.List
-import Data.Map.Strict (Map)
-import qualified Data.Map.Strict as Map
-import Data.Maybe
-import Data.Set (Set)
-import qualified Data.Set as Set
-import Data.Vector (Vector)
-import qualified Data.Vector as Vec
-import qualified Util.Util as U
-
 import qualified Program.RunDay as R (runDay, Day)
 import Data.Attoparsec.Text
-import Data.Void
 {- ORMOLU_ENABLE -}
 
 runDay :: R.Day
@@ -21,19 +10,25 @@ runDay = R.runDay inputParser partA partB
 
 ------------ PARSER ------------
 inputParser :: Parser Input
-inputParser = error "Not implemented yet!"
+inputParser = decimal `sepBy` endOfLine
 
 ------------ TYPES ------------
-type Input = Void
+type Input = [Int]
 
-type OutputA = Void
+type OutputA = Int
 
-type OutputB = Void
+type OutputB = Int
 
 ------------ PART A ------------
+consecPairs :: [a] -> [(a, a)]
+consecPairs xs = zip xs (tail xs)
+
 partA :: Input -> OutputA
-partA = error "Not implemented yet!"
+partA = length . filter (\(a, b) -> a < b) . consecPairs
 
 ------------ PART B ------------
+consecTriples :: [a] -> [(a, a, a)]
+consecTriples xs = zip3 xs (tail xs) (tail (tail xs))
+
 partB :: Input -> OutputB
-partB = error "Not implemented yet!"
+partB = partA . fmap (\(a, b, c) -> a + b + c) . consecTriples
