@@ -1,15 +1,9 @@
 module Days.Day02 (runDay) where
 
 {- ORMOLU_DISABLE -}
+import Control.Applicative ((<|>))
+import Data.Functor (($>))
 import Data.List
-import Data.Map.Strict (Map)
-import qualified Data.Map.Strict as Map
-import Data.Maybe
-import Data.Set (Set)
-import qualified Data.Set as Set
-import Data.Vector (Vector)
-import qualified Data.Vector as Vec
-import qualified Util.Util as U
 
 import qualified Program.RunDay as R (runDay, Day)
 import Data.Attoparsec.Text
@@ -21,19 +15,40 @@ runDay = R.runDay inputParser partA partB
 
 ------------ PARSER ------------
 inputParser :: Parser Input
-inputParser = error "Not implemented yet!"
+inputParser = ((,) <$> parseDirection <*> (skipSpace *> decimal)) `sepBy` endOfLine
+  where
+    parseDirection =
+      string "forward" $> Forward
+        <|> string "up" $> Up
+        <|> string "down" $> Down
 
 ------------ TYPES ------------
-type Input = Void
+data Direction = Forward | Up | Down deriving (Show, Eq)
 
-type OutputA = Void
+type Instruction = (Direction, Int)
 
-type OutputB = Void
+type Input = [Instruction]
+
+type OutputA = Int
+
+type OutputB = Int
 
 ------------ PART A ------------
+-- We track our horizontal co-ordinate (h) and depth (v)
 partA :: Input -> OutputA
-partA = error "Not implemented yet!"
+partA = (\(h, v) -> h * v) . foldl' executeInstruction (0, 0)
+  where
+    executeInstruction (h, v) (direction, magnitude) = case direction of
+      Forward -> (h + magnitude, v)
+      Up -> (h, v - magnitude)
+      Down -> (h, v + magnitude)
 
 ------------ PART B ------------
+-- Here we also track aim (a)
 partB :: Input -> OutputB
-partB = error "Not implemented yet!"
+partB = (\(h, v, _) -> h * v) . foldl' executeInstruction (0, 0, 0)
+  where
+    executeInstruction (h, v, a) (direction, magnitude) = case direction of
+      Forward -> (h + magnitude, v + (magnitude * a), a)
+      Up -> (h, v, a - magnitude)
+      Down -> (h, v, a + magnitude)
