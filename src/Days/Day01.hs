@@ -24,11 +24,12 @@ consecPairs :: [a] -> [(a, a)]
 consecPairs xs = zip xs (tail xs)
 
 partA :: Input -> OutputA
-partA = length . filter (\(a, b) -> a < b) . consecPairs
+partA = length . filter (uncurry (<)) . consecPairs
 
 ------------ PART B ------------
-consecTriples :: [a] -> [(a, a, a)]
-consecTriples xs = zip3 xs (tail xs) (tail (tail xs))
+-- Computes the sums of each consecutive triple of numbers in a list
+slidingWindowSums :: (Num a) => [a] -> [a]
+slidingWindowSums xs = zipWith3 (\x y z -> x + y + z) xs (tail xs) (tail (tail xs))
 
 partB :: Input -> OutputB
-partB = partA . fmap (\(a, b, c) -> a + b + c) . consecTriples
+partB = partA . slidingWindowSums
