@@ -3,11 +3,12 @@ module Days.Day02 (runDay) where
 {- ORMOLU_DISABLE -}
 import Control.Applicative ((<|>))
 import Data.Functor (($>))
-import Data.List
+import Data.List ( foldl' )
 
 import qualified Program.RunDay as R (runDay, Day)
 import Data.Attoparsec.Text
-import Data.Void
+    ( sepBy, decimal, skipSpace, endOfLine, string, Parser )
+import Data.Void ()
 {- ORMOLU_ENABLE -}
 
 runDay :: R.Day
@@ -36,7 +37,7 @@ type OutputB = Int
 ------------ PART A ------------
 -- We track our horizontal co-ordinate (h) and depth (v)
 partA :: Input -> OutputA
-partA = (\(h, v) -> h * v) . foldl' executeInstruction (0, 0)
+partA = uncurry (*) . foldl' executeInstruction (0, 0)
   where
     executeInstruction (h, v) (direction, magnitude) = case direction of
       Forward -> (h + magnitude, v)

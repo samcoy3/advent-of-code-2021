@@ -2,7 +2,7 @@ module Days.Day01 (runDay) where
 
 {- ORMOLU_DISABLE -}
 import qualified Program.RunDay as R (runDay, Day)
-import Data.Attoparsec.Text
+import Data.Attoparsec.Text ( sepBy, decimal, endOfLine, Parser )
 {- ORMOLU_ENABLE -}
 
 runDay :: R.Day
