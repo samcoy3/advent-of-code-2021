@@ -1,19 +1,14 @@
 module Days.Day03 (runDay) where
 
 {- ORMOLU_DISABLE -}
-import Data.List
-import Data.Map.Strict (Map)
-import qualified Data.Map.Strict as Map
-import Data.Maybe
-import Data.Set (Set)
-import qualified Data.Set as Set
-import Data.Vector (Vector)
-import qualified Data.Vector as Vec
-import qualified Util.Util as U
+import Control.Applicative ((<|>))
+import Data.Functor (($>))
+import Data.List ( foldl', transpose )
 
 import qualified Program.RunDay as R (runDay, Day)
 import Data.Attoparsec.Text
-import Data.Void
+    ( Parser, many1, sepBy, char, endOfLine )
+import Data.Void ()
 {- ORMOLU_ENABLE -}
 
 runDay :: R.Day
@@ -21,19 +16,50 @@ runDay = R.runDay inputParser partA partB
 
 ------------ PARSER ------------
 inputParser :: Parser Input
-inputParser = error "Not implemented yet!"
+inputParser = many1 (char '1' $> True <|> char '0' $> False) `sepBy` endOfLine
 
 ------------ TYPES ------------
-type Input = Void
+type Input = [[Bool]]
 
-type OutputA = Void
+type OutputA = Int
 
-type OutputB = Void
+type OutputB = Int
 
 ------------ PART A ------------
+-- Returns GT if there is a majority of True values in the input list of Bools;
+-- LT if there is a majority of False values; and EQ if there are an equal number.
+truesCount :: [Bool] -> Ordering
+truesCount bits = compare (length . filter id $ bits) (length . filter not $ bits)
+
 partA :: Input -> OutputA
-partA = error "Not implemented yet!"
+partA = uncurry (*) . foldl' processColumn (0, 0) . transpose
+  where
+    processColumn (gamma, epsilon) bits =
+      if truesCount bits == GT
+        then (gamma * 2 + 1, epsilon * 2)
+        else (gamma * 2, epsilon * 2 + 1)
 
 ------------ PART B ------------
+data RatingType = Oxygen | CO2 deriving (Eq, Show)
+
 partB :: Input -> OutputB
-partB = error "Not implemented yet!"
+partB report = findRating report Oxygen * findRating report CO2
+  where
+    findRating = findRating' 0
+    findRating' rating report reportType =
+      -- Dealing with the case where we've found our line in the report.
+      if length report == 1
+        then foldl' (\acc bit -> acc * 2 + fromEnum bit) rating $ head report
+        else -- If we haven't found our line of the report, we narrow down the report according to our bit criteria.
+
+          let correctBit = applyBitCriteria (head <$> report) reportType
+           in findRating'
+                (2 * rating + fromEnum correctBit)
+                (tail <$> filter ((== correctBit) . head) report)
+                reportType
+
+    -- Applies the "bit criteria" to a list of bits.
+    -- The correct bit is 1 (true) iff the rating type is Oxygen and there are at least as many 1s as 0s;
+    -- or the rating type is CO2 and the 0s strictly outnumber the 1s.
+    applyBitCriteria bits rtype =
+      (truesCount bits, rtype) `elem` [(GT, Oxygen), (LT, CO2), (EQ, Oxygen)]
