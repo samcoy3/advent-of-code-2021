@@ -66,15 +66,12 @@ syntaxScore ']' = 57
 syntaxScore '}' = 1197
 syntaxScore '>' = 25137
 
-isCorrupt :: ChunkType -> Bool
-isCorrupt (Corrupted c) = True
-isCorrupt _ = False
+getCorruptScore :: ChunkType -> Maybe Int
+getCorruptScore (Corrupted c) = Just $ syntaxScore c
+getCorruptScore _ = Nothing
 
 partA :: Input -> OutputA
-partA = foldr errorScore 0
-  where
-    errorScore (Corrupted c) x = (+) (syntaxScore c) x
-    errorScore _ x = x
+partA = sum . mapMaybe getCorruptScore
 
 ------------ PART B ------------
 autoCompleteScore :: String -> Int
