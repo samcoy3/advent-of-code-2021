@@ -35,6 +35,7 @@ inputParser = (,) <$> (dots <* count 2 endOfLine) <*> folds
 
 ------------ TYPES ------------
 data Direction = Horizontal | Vertical deriving (Eq, Show)
+
 type Fold = (Direction, Int)
 
 type Input = (Set (Int, Int), [Fold])
@@ -46,13 +47,14 @@ type OutputB = String
 ------------ PART A ------------
 performFold :: Set (Int, Int) -> Fold -> Set (Int, Int)
 performFold points (direction, threshold) = flip Set.map points $
-  \(x, y) -> if
-    | direction == Vertical && y < threshold -> (x, y)
-    | direction == Horizontal && x < threshold -> (x, y)
-    | direction == Vertical && y > threshold
-      -> (x, 2 * threshold - y)
-    | direction == Horizontal && x > threshold
-      -> (2 * threshold - x, y)
+  \(x, y) ->
+    if
+        | direction == Vertical && y < threshold -> (x, y)
+        | direction == Horizontal && x < threshold -> (x, y)
+        | direction == Vertical && y > threshold ->
+          (x, 2 * threshold - y)
+        | direction == Horizontal && x > threshold ->
+          (2 * threshold - x, y)
 
 partA :: Input -> OutputA
 partA (points, folds) = Set.size $ performFold points (head folds)
@@ -65,13 +67,14 @@ printDots :: Set (Int, Int) -> String
 printDots points =
   let (minX, maxX, minY, maxY) =
         (,,,)
-        (minimum (Set.map fst points))
-        (maximum (Set.map fst points))
-        (minimum (Set.map snd points))
-        (maximum (Set.map snd points))
-      display y x = if (x, y) `Set.member` points
-        then 'X'
-        else ' '
+          (minimum (Set.map fst points))
+          (maximum (Set.map fst points))
+          (minimum (Set.map snd points))
+          (maximum (Set.map snd points))
+      display y x =
+        if (x, y) `Set.member` points
+          then 'X'
+          else ' '
       row y = display y <$> [minX .. maxX]
    in intercalate "\n" (row <$> [minY .. maxY])
 

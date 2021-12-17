@@ -37,14 +37,16 @@ increaseEnergy (Energy x) = if x < 9 then Energy (x + 1) else Flashed
 increaseEnergy Flashed = Flashed
 
 neighbours :: (Int, Int) -> [(Int, Int)]
-neighbours (x, y) = [(x', y')
-                    | x' <- [x-1..x+1], y' <- [y-1..y+1]
-                    , (x, y) /= (x', y')]
+neighbours (x, y) =
+  [ (x', y')
+    | x' <- [x -1 .. x + 1],
+      y' <- [y -1 .. y + 1],
+      (x, y) /= (x', y')
+  ]
 
 step :: Input -> (Int, Input)
 step cavern =
-  let
-      -- Reset flashes at the end of a step
+  let -- Reset flashes at the end of a step
       resetFlashes o = if o == Flashed then Energy 0 else o
       -- At the start of the step, increases the energy of all octopodes
       increasedAllEnergy = increaseEnergy <$> cavern
@@ -69,4 +71,4 @@ partA = sum . take 100 . toList . unfoldr (fmap pure . step)
 
 ------------ PART B ------------
 partB :: Input -> OutputB
-partB = (+1) . fromJust . elemIndex 100 . toList . unfoldr (fmap pure . step)
+partB = (+ 1) . fromJust . elemIndex 100 . toList . unfoldr (fmap pure . step)

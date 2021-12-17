@@ -22,20 +22,23 @@ runDay = R.runDay inputParser partA partB
 -- Note: it's important to delete incoming edges to "start":
 --   we never want to take them (including in Part B)
 inputParser :: Parser Input
-inputParser = fmap (Set.delete "start") <$>
-  choice
-    [ endOfInput $> Map.empty,
-      edge <* endOfLine >>= \(u, v) ->
-        Map.insertWith Set.union u (Set.singleton v)
-          . Map.insertWith Set.union v (Set.singleton u)
-          <$> inputParser
-    ]
+inputParser =
+  fmap (Set.delete "start")
+    <$> choice
+      [ endOfInput $> Map.empty,
+        edge <* endOfLine >>= \(u, v) ->
+          Map.insertWith Set.union u (Set.singleton v)
+            . Map.insertWith Set.union v (Set.singleton u)
+            <$> inputParser
+      ]
   where
     edge = many1 letter `around` char '-'
 
 ------------ TYPES ------------
 type Input = Graph
+
 type Graph = Map Node (Set Node)
+
 type Node = String
 
 type OutputA = Int
@@ -48,18 +51,22 @@ bfs :: Bool -> Graph -> [[Node]]
 bfs canVisitSmallCave graph = bfs' canVisitSmallCave Set.empty "start"
   where
     bfs' canVisitSmallCave excluded current =
-          let newExcluded = if isLower (head current) then Set.insert current excluded else excluded
-              validNeighbours = (graph Map.! current) Set.\\ excluded
-              secondSmallCaves = if canVisitSmallCave
-                then (graph Map.! current) `Set.intersection` excluded
-                else Set.empty
-           in if current == "end"
-                 then [["end"]]
-                 else fmap (current :) . concat
-                      $ (bfs' canVisitSmallCave newExcluded
-                      <$> Set.toList validNeighbours)
-                      ++ (bfs' False newExcluded
-                      <$> Set.toList secondSmallCaves)
+      let newExcluded = if isLower (head current) then Set.insert current excluded else excluded
+          validNeighbours = (graph Map.! current) Set.\\ excluded
+          secondSmallCaves =
+            if canVisitSmallCave
+              then (graph Map.! current) `Set.intersection` excluded
+              else Set.empty
+       in if current == "end"
+            then [["end"]]
+            else
+              fmap (current :) . concat $
+                ( bfs' canVisitSmallCave newExcluded
+                    <$> Set.toList validNeighbours
+                )
+                  ++ ( bfs' False newExcluded
+                         <$> Set.toList secondSmallCaves
+                     )
 
 partA :: Input -> OutputA
 partA = length . bfs False
