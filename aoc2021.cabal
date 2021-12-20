@@ -113,7 +113,7 @@ executable aoc-template-exe
       DeriveFunctor
       DeriveFoldable
       DeriveTraversable
-  ghc-options: -threaded -rtsopts -with-rtsopts=-N
+  ghc-options: -threaded -rtsopts -with-rtsopts=-N4 -with-rtsopts=-qa -with-rtsopts=-C0 -funfolding-use-threshold=16 -fexcess-precision -optc-O3 -optc-ffast-math -O2
   build-depends:
       ansi-terminal
     , aoc2021
